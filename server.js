@@ -74,7 +74,7 @@ res.json({
 
 });
 app.get("/", (req, res) => {
-    res.send("Backend Working");
+    res.sendFile(__dirname + "/index.html");
 });
 app.listen(3000, () => {
     console.log("Server running on http://localhost:3000");
