@@ -11,26 +11,31 @@ generateBtn.addEventListener("click", async () => {
     const company = document.getElementById("company").value;
     const skills = document.getElementById("skills").value;
 
-    if (!name || !role || !company || !skills) {
-        alert("Please fill all fields.");
-        return;
-    }
+    const resume = document.getElementById("resume").files[0];
+
+if (!resume && !name && !role && !company && !skills) {
+    alert("Please upload a resume or fill at least one field.");
+    return;
+}
 
     output.textContent = "Generating...";
 
     try {
         console.log("Sending request...");
-        const response = await fetch("/generate", {
+        const formData = new FormData();
+formData.append("name", name);
+formData.append("role", role);
+formData.append("company", company);
+formData.append("skills", skills);
+if (resume) {
+            formData.append("resume", resume);
+}    
+console.log(formData.get("resume"));
+        const response = await fetch("https://cover-letter-generator-phi-eight.vercel.app/generate", {
         method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                name,
-                role,
-                company,
-                skills
-            })
+            
+            body: formData,
+
         });
         console.log("Response received");
         console.log(response.status);

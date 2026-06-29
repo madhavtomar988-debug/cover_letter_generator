@@ -1,11 +1,21 @@
+process.on("uncaughtException", (err) => {
+  console.error("UNCAUGHT:", err);
+});
+
+process.on("unhandledRejection", (err) => {
+  console.error("UNHANDLED:", err);
+});
 console.log("SERVER VERSION 999");
 console.log("Server file started");
 const express = require("express");
 const cors = require("cors");
+const multer = require("multer");
+const pdfParse = require("pdf-parse");
 require("dotenv").config();
 
 const { GoogleGenAI } = require("@google/genai");
-const app = express();   // <-- Pehle app banao
+const app = express(); 
+const upload = multer({ storage: multer.memoryStorage() });
 
 // Ab middleware
 app.use((req, res, next) => {
@@ -17,15 +27,28 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
+app.get("/app.js", (req, res) => {
+  res.sendFile(__dirname + "/app.js");
 });
+
+app.get("/style.css", (req, res) => {
+  res.sendFile(__dirname + "/style.css");
+});
+
+const ai = new 
+GoogleGenAI(process.env.GEMINI_API_KEY); 
+
 console.log(process.env.GEMINI_API_KEY);   
-app.post("/generate", async (req, res) => {
-    console.log("POST HIT");
+app.post("/generate", upload.single("resume"), async (req, res) => {
+console.log("POST HIT");
     console.log(req.body);
     console.log("POST request received");
     try {
+        let resumeText = "";
+        if (req.file) {
+            const data = await pdfParse(req.file.buffer);
+            resumeText = data.text;
+        }
         const { name, role, company, skills } = req.body;
 
        const prompt = `
@@ -52,6 +75,9 @@ Instructions:
 
 Sincerely,
 ${name}
+
+Resume:
+${resumeText}
 `;
 
    const result = await ai.models.generateContent({
@@ -84,3 +110,5 @@ app.listen(3000, () => {
 setInterval(() => {
     console.log("Server Alive");
 }, 5000);
+
+
