@@ -8,12 +8,7 @@
   ],
   "routes": [
     {
-      "src": "/app.js",
-      "dest": "/app.js"
-    },
-    {
-      "src": "/style.css",
-      "dest": "/style.css"
+      "handle": "filesystem"
     },
     {
       "src": "/generate",
