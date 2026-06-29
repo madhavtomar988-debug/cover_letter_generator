@@ -20,8 +20,8 @@ generateBtn.addEventListener("click", async () => {
 
     try {
         console.log("Sending request...");
-        const response = await fetch("http://127.0.0.1:3000/generate", {
-            method: "POST",
+        const response = await fetch("/generate", {
+        method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
